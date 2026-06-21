@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NUMIX - Advanced Communication Hub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #111126 0%, #05050d 100%);
+            color: #ffffff;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        .top-global-controls {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+
+        .voice-toggle-btn, .lang-select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 30px;
+            color: #fff;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            max-width: 250px;
+        }
+        .lang-select option {
+            background: #111126;
+            color: #fff;
+        }
+        .voice-toggle-btn.muted {
+            background: rgba(255, 74, 90, 0.15);
+            border-color: #ff4a5a;
+            color: #ff4a5a;
+            box-shadow: 0 0 10px rgba(255, 74, 90, 0.2);
+        }
+
+        .app-view {
+            display: none;
+            height: 100vh;
+            width: 100vw;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .app-view.active-view {
+            display: flex;
+        }
+
+        /* --- HOME PAGE LOOKS --- */
+        .brand-title {
+            font-size: 4rem;
+            font-weight: 800;
+            letter-spacing: 4px;
+            background: linear-gradient(45deg, #00ff88, #00b3ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 40px rgba(0, 255, 136, 0.25);
+            margin-bottom: 5px;
+        }
+        .brand-subtitle {
+            color: rgba(255,255,255,0.5);
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+        }
+        .hub-cards-container {
+            display: flex;
+            gap: 30px;
+            width: 100%;
+            max-width: 650px;
+            padding: 0 20px;
+        }
+        .hub-card {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 35px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .hub-card:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+        }
+        .hub-card.call-card:hover { border-color: #00ff88; box-shadow: 0 0 25px rgba(0, 255, 136, 0.15); }
+        .hub-card.msg-card:hover { border-color: #00b3ff; box-shadow: 0 0 25px rgba(0, 179, 255, 0.15); }
+        .hub-card .icon-slot { font-size: 3rem; margin-bottom: 15px; display: block; }
+
+        /* --- PHONE WRAPPER --- */
+        .phone-body {
+            width: 100%;
+            max-width: 340px;
+            height: 92vh;
+            max-height: 580px;
+            background: rgba(22, 22, 38, 0.85);
+            backdrop-filter: blur(20px);
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-radius: 32px;
+            box-shadow: 0px 10px 40px rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+            padding: 20px 15px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .phone-body.alarm-active { border-color: rgba(220, 53, 69, 0.8); box-shadow: 0 0 30px rgba(220, 53, 69, 0.3); }
+        .phone-body.success-active { border-color: rgba(0, 255, 136, 0.8); box-shadow: 0 0 30px rgba(0, 255, 136, 0.3); }
+
+        .back-to-home {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: transparent;
+            border: none;
+            color: rgba(255,255,255,0.4);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: color 0.2s;
+            z-index: 10;
+        }
+        .back-to-home:hover { color: #ffffff; }
+
+        .phone-screen {
+            height: 110px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            margin-top: 18px;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.45);
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.04);
+        }
+
+        .msg-screen-layout {
+            height: 145px !important;
+            margin-bottom: 10px;
+        }
+
+        .country-badge {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            color: #00ff88;
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            transition: all 0.2s ease;
+            visibility: hidden;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 140px;
+        }
+        .msg-badge {
+            color: #00b3ff;
+            border-color: rgba(0, 179, 255, 0.2);
+        }
+
+        .phone-display-number {
+            font-size: 1.8rem;
+            font-weight: 300;
+            text-align: center;
+            letter-spacing: 1px;
+            word-break: break-all;
+            margin-top: auto;
+            margin-bottom: auto;
+            transition: color 0.2s ease;
+        }
+        
+        .phone-display-number.msg-display-compact {
+            font-size: 1.15rem; 
+            margin-top: 2px;
+            margin-bottom: 5px;
+            text-align: center;
+            font-weight: 400;
+        }
+
+        .color-invalid { color: #ff4a5a !important; text-shadow: 0 0 8px rgba(255, 74, 90, 0.2); }
+        .color-valid { color: #ffffff !important; text-shadow: 0 0 10px rgba(255, 255, 255, 0.4); }
+        .color-placeholder { color: rgba(255,255,255,0.2) !important; }
+
+        .msg-textarea {
+            width: 100%;
+            height: 62px; 
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            color: #fff;
+            padding: 6px 10px;
+            font-size: 0.82rem;
+            resize: none;
+            margin-top: auto;
+            box-sizing: border-box;
+            transition: all 0.2s;
+        }
+        .msg-textarea:focus { outline: none; border-color: #00b3ff; background: rgba(0, 179, 255, 0.03); }
+
+        .keypad-grid {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            justify-items: center;
+            align-content: center;
+            margin-bottom: 10px;
+            display: grid;
+        }
+
+        .dial-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #202033, #141422);
+            border: 1px solid rgba(255,255,255,0.02);
+            color: #b5b5c3;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.1s ease;
+        }
+        .dial-btn:active, .dial-btn.key-pressed { background: #00ff88; color: #0c0c14; transform: scale(0.92); }
+
+        .call-container { display: flex; justify-content: center; align-items: center; gap: 25px; width: 100%; }
+        .dial-btn.call-action { background: linear-gradient(145deg, #00ff88, #00b35f); color: #0c0c14; border: none; width: 54px; height: 54px;}
+        .dial-btn.msg-action { background: linear-gradient(145deg, #00b3ff, #0077cc); color: #fff; border: none; width: 54px; height: 54px;}
+        .dial-btn.cut-action { background: linear-gradient(145deg, #ff4a5a, #cc1424); color: #ffffff; border: none; width: 54px; height: 54px;}
+
+        .smart-status-bar { display: flex; justify-content: space-between; font-size: 0.68rem; text-transform: uppercase; width: 100%; align-items: center; margin-bottom: 2px;}
+        .alarm-banner { display: none; font-weight: 600; background-color: rgba(220, 53, 69, 0.15); color: #ff4a5a; border: 1px solid rgba(220, 53, 69, 0.3); border-radius: 8px; padding: 2px; text-align: center; font-size: 0.68rem; margin-top: 3px;}
+    </style>
+</head>
+<body>
+
+    <div class="top-global-controls">
+        <select id="langSelector" class="lang-select" onchange="changeLanguageSystem()">
+            </select>
+        <button id="voiceToggle" onclick="toggleVoiceSystem()" class="voice-toggle-btn">🔊 Voice: ON</button>
+    </div>
+
+    <div id="viewHome" class="app-view active-view animate__animated animate__fadeIn">
+        <h1 class="brand-title">NUMIX</h1>
+        <p class="brand-subtitle">Welcome to NUMIX System Hub</p>
+        
+        <div class="hub-cards-container">
+            <div class="hub-card call-card" onclick="switchView('viewCall')">
+                <span class="icon-slot">📞</span>
+                <h4>Voice Portal</h4>
+                <p class="text-muted small mb-0">Secure direct transmission routing</p>
+            </div>
+            <div class="hub-card msg-card" onclick="switchView('viewMessage')">
+                <span class="icon-slot">💬</span>
+                <h4>Message Desk</h4>
+                <p class="text-muted small mb-0">Instant standard cellular dispatch</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="viewCall" class="app-view animate__animated">
+        <div id="callPhoneBody" class="phone-body">
+            <button class="back-to-home" onclick="exitToHome('call')">← Exit</button>
+            
+            <div class="phone-screen">
+                <div class="smart-status-bar">
+                    <div id="callStatusAlert" style="font-weight: bold; color: #00ff88;">Ready</div>
+                    <div id="callCountryBadge" class="country-badge">🇵🇰 PK</div>
+                </div>
+                <div id="callDisplay" class="phone-display-number color-placeholder">Dial Number...</div>
+                <div id="callAlarmBanner" class="alarm-banner">🚨 ALARM: WRONG NUMBER!</div>
+            </div>
+
+            <div class="keypad-grid">
+                <button class="dial-btn" onclick="pressKey('1', 'call')">1</button>
+                <button class="dial-btn" onclick="pressKey('2', 'call')">2</button>
+                <button class="dial-btn" onclick="pressKey('3', 'call')">3</button>
+                <button class="dial-btn" onclick="pressKey('4', 'call')">4</button>
+                <button class="dial-btn" onclick="pressKey('5', 'call')">5</button>
+                <button class="dial-btn" onclick="pressKey('6', 'call')">6</button>
+                <button class="dial-btn" onclick="pressKey('7', 'call')">7</button>
+                <button class="dial-btn" onclick="pressKey('8', 'call')">8</button>
+                <button class="dial-btn" onclick="pressKey('9', 'call')">9</button>
+                <button class="dial-btn" onclick="pressKey('+', 'call')">+</button>
+                <button class="dial-btn" onclick="pressKey('0', 'call')">0</button>
+                <button class="dial-btn" style="color: #ff5e7e;" onclick="pressDelete('call')">⌫</button>
+            </div>
+
+            <div class="call-container">
+                <button onclick="dialSequence('call')" class="dial-btn call-action">📞</button>
+                <button onclick="hangUpCall('call')" class="dial-btn cut-action">❌</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="viewMessage" class="app-view animate__animated">
+        <div id="msgPhoneBody" class="phone-body">
+            <button class="back-to-home" onclick="exitToHome('msg')">← Exit</button>
+            
+            <div id="msgScreenZone" class="phone-screen msg-screen-layout">
+                <div class="smart-status-bar">
+                    <div id="msgStatusAlert" style="font-weight: bold; color: #00b3ff;">Ready</div>
+                    <div id="msgCountryBadge" class="country-badge msg-badge">🇵🇰 PK</div>
+                </div>
+                <div id="msgDisplay" class="phone-display-number msg-display-compact color-placeholder">Target Number...</div>
+                <textarea id="smsText" class="msg-textarea" placeholder="Write your message payload context here..."></textarea>
+                <div id="msgAlarmBanner" class="alarm-banner">🚨 DISPATCH ATTEMPT FAILED!</div>
+            </div>
+
+            <div class="keypad-grid">
+                <button class="dial-btn" onclick="pressKey('1', 'msg')">1</button>
+                <button class="dial-btn" onclick="pressKey('2', 'msg')">2</button>
+                <button class="dial-btn" onclick="pressKey('3', 'msg')">3</button>
+                <button class="dial-btn" onclick="pressKey('4', 'msg')">4</button>
+                <button class="dial-btn" onclick="pressKey('5', 'msg')">5</button>
+                <button class="dial-btn" onclick="pressKey('6', 'msg')">6</button>
+                <button class="dial-btn" onclick="pressKey('7', 'msg')">7</button>
+                <button class="dial-btn" onclick="pressKey('8', 'msg')">8</button>
+                <button class="dial-btn" onclick="pressKey('9', 'msg')">9</button>
+                <button class="dial-btn" onclick="pressKey('+', 'msg')">+</button>
+                <button class="dial-btn" onclick="pressKey('0', 'msg')">0</button>
+                <button class="dial-btn" style="color: #ff5e7e;" onclick="pressDelete('msg')">⌫</button>
+            </div>
+
+            <div class="call-container">
+                <button onclick="dialSequence('msg')" class="dial-btn msg-action">✉️</button>
+                <button onclick="hangUpCall('msg')" class="dial-btn cut-action">❌</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isVoiceEnabled = true;
+        let selectedLang = "en-US";
+        let callNumber = "";
+        let msgNumber = "";
+        let detectedCountryName = "Unknown";
+        
+        let ringCtx = null;
+        let ringNodes = [];
+        let globalVoicesList = [];
+
+        const baseUIDictionary = {
+            ready: "Ready",
+            connected: "Connected",
+            dispatched: "Message Dispatched",
+            blocked: "Execution Blocked"
+        };
+
+        // EXTENDED GLOBAL COUNTRY CODE MATRIX (Schengen, Famous Asian, China Included)
+        const internationalPrefixes = {
+            '1': { name: 'USA / Canada', flag: '🇺🇸' },
+            '44': { name: 'United Kingdom', flag: '🇬🇧' },
+            '91': { name: 'India', flag: '🇮🇳' },
+            '92': { name: 'Pakistan', flag: '🇵🇰' },
+            '966': { name: 'Saudi Arabia', flag: '🇸🇦' },
+            '971': { name: 'UAE', flag: '🇦🇪' },
+            '86': { name: 'China', flag: '🇨🇳' },
+            '81': { name: 'Japan', flag: '🇯🇵' },
+            '82': { name: 'South Korea', flag: '🇰🇷' },
+            '49': { name: 'Germany', flag: '🇩🇪' },
+            '33': { name: 'France', flag: '🇫🇷' },
+            '34': { name: 'Spain', flag: '🇪🇸' },
+            '39': { name: 'Italy', flag: '🇮🇹' }
+        };
+
+        function getSpokenPhrase(statusType, langCode) {
+            let cleanLang = langCode.split('-')[0].toLowerCase();
+            
+            if (statusType === 'connected') {
+                if (cleanLang === 'ur' || cleanLang === 'hi') return "Aap ki call mila di gayi hai.";
+                if (cleanLang === 'ar') return "تم الاتصال بنجاح.";
+                if (cleanLang === 'es') return "Llamada conectada exitosamente.";
+                if (cleanLang === 'fr') return "Appel connecté avec succès.";
+                if (cleanLang === 'de') return "Verbindung erfolgreich hergestellt.";
+                if (cleanLang === 'zh') return "电话已成功接通。";
+                if (cleanLang === 'ja') return "通話が接続されました。";
+                return "Call connected successfully.";
+            }
+            if (statusType === 'dispatched') {
+                if (cleanLang === 'ur' || cleanLang === 'hi') return "Peghaam bhaij diya gaya hai.";
+                if (cleanLang === 'ar') return "تم إرسال الرسالة.";
+                if (cleanLang === 'es') return "Mensaje enviado.";
+                if (cleanLang === 'fr') return "Message envoyé.";
+                if (cleanLang === 'de') return "Nachricht erfolgreich gesendet.";
+                if (cleanLang === 'zh') return "短信已成功发送。";
+                return "Message dispatched successfully.";
+            }
+            if (statusType === 'wrongNum') {
+                if (cleanLang === 'ur' || cleanLang === 'hi') return "Aap ka milaya hua number durust nahi hai. Baraye meharbani dobara koshish karein.";
+                if (cleanLang === 'ar') return "الرقم الذي طلبته غير صحيح. يرجى المحاولة مرة أخرى.";
+                if (cleanLang === 'es') return "El número marcado es incorrecto. Por favor verifique.";
+                if (cleanLang === 'fr') return "Le numéro composé est incorrect. Veuillez réessayer.";
+                if (cleanLang === 'de') return "Die gewählte Nummer ist falsch. Bitte überprüfen Sie.";
+                if (cleanLang === 'zh') return "您拨打...的号码不正确，请稍后再拨。";
+                return "The number you have dialed is incorrect. Please check the number and try again.";
+            }
+            if (statusType === 'msgFailed') {
+                if (cleanLang === 'ur' || cleanLang === 'hi') return "Ghalat number. Peghaam nahi bhaija ja saka.";
+                if (cleanLang === 'ar') return "فشلت عملية الإرسال. الرقم غير صحيح.";
+                return "Invalid destination layout. Message dispatch failed.";
+            }
+            return "";
+        }
+
+        function populateGlobalVoices() {
+            if (!('speechSynthesis' in window)) return;
+            
+            globalVoicesList = window.speechSynthesis.getVoices();
+            const selector = document.getElementById('langSelector');
+            selector.innerHTML = '';
+
+            let uniqueLangTracker = new Set();
+
+            // Load device native standard list profiles completely
+            globalVoicesList.forEach(voice => {
+                if(!uniqueLangTracker.has(voice.lang)) {
+                    uniqueLangTracker.add(voice.lang);
+                    let opt = document.createElement('option');
+                    opt.value = voice.lang;
+                    opt.innerText = `🌐 ${voice.name} (${voice.lang})`;
+                    selector.appendChild(opt);
+                }
+            });
+
+            // FIXED EXTRA FALLBACKS APPEND (Ensures existing structures are completely retained!)
+            if (!uniqueLangTracker.has('ur-PK')) {
+                let optUr = document.createElement('option');
+                optUr.value = 'ur-PK-fallback';
+                optUr.innerText = `🇵🇰 Urdu (Pakistan) - Desi Core Fallback`;
+                selector.appendChild(optUr);
+            }
+            if (!uniqueLangTracker.has('hi-IN')) {
+                let optHi = document.createElement('option');
+                optHi.value = 'hi-IN-fallback';
+                optHi.innerText = `🇮🇳 Hindi (India) - Desi Core Fallback`;
+                selector.appendChild(optHi);
+            }
+
+            // Default startup active selection priority mappings
+            if (!selector.value && globalVoicesList.length > 0) {
+                selector.value = globalVoicesList[0].lang;
+            }
+            selectedLang = selector.value || "en-US";
+        }
+
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = populateGlobalVoices;
+            populateGlobalVoices();
+        }
+
+        function changeLanguageSystem() {
+            selectedLang = document.getElementById('langSelector').value;
+            document.getElementById('callStatusAlert').innerText = baseUIDictionary.ready;
+            document.getElementById('msgStatusAlert').innerText = baseUIDictionary.ready;
+        }
+
+        function detectCountryPrefix(number, badgeElement) {
+            let cleanNum = number.trim();
+            if (cleanNum.startsWith('00')) cleanNum = '+' + cleanNum.slice(2);
+            
+            if (!cleanNum.startsWith('+')) {
+                if (cleanNum.startsWith('03') || cleanNum.startsWith('3')) {
+                    badgeElement.innerHTML = "🇵🇰 Pakistan";
+                    badgeElement.style.visibility = "visible";
+                    detectedCountryName = "Pakistan";
+                    return;
+                }
+                badgeElement.style.visibility = "hidden";
+                detectedCountryName = "Unknown";
+                return;
+            }
+
+            let searchStr = cleanNum.slice(1);
+            let matchedCountry = null;
+
+            for (let len = 3; len >= 1; len--) {
+                let prefix = searchStr.substring(0, len);
+                if (internationalPrefixes[prefix]) {
+                    matchedCountry = internationalPrefixes[prefix];
+                    break;
+                }
+            }
+
+            if (matchedCountry) {
+                badgeElement.innerHTML = `${matchedCountry.flag} ${matchedCountry.name}`;
+                badgeElement.style.visibility = "visible";
+                detectedCountryName = matchedCountry.name;
+            } else {
+                badgeElement.innerHTML = "🌐 Int Range";
+                badgeElement.style.visibility = "visible";
+                detectedCountryName = "International Range";
+            }
+        }
+
+        function switchView(viewId) {
+            document.querySelectorAll('.app-view').forEach(view => {
+                view.classList.remove('active-view', 'animate__fadeIn');
+            });
+            const selectedView = document.getElementById(viewId);
+            selectedView.classList.add('active-view', 'animate__fadeIn');
+        }
+
+        function exitToHome(module) {
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            if (ringNodes.length > 0) { ringNodes.forEach(n => { try{n.stop();}catch(e){} }); ringNodes = []; }
+
+            if (module === 'call') {
+                callNumber = "";
+                const disp = document.getElementById('callDisplay');
+                disp.innerText = "Dial Number...";
+                disp.className = "phone-display-number color-placeholder";
+                document.getElementById('callCountryBadge').style.visibility = "hidden";
+                resetUIStyles('call');
+            } else {
+                msgNumber = "";
+                const disp = document.getElementById('msgDisplay');
+                disp.innerText = "Target Number...";
+                disp.className = "phone-display-number msg-display-compact color-placeholder";
+                document.getElementById('smsText').value = ""; 
+                document.getElementById('msgCountryBadge').style.visibility = "hidden";
+                resetUIStyles('msg');
+            }
+            switchView('viewHome');
+        }
+
+        function toggleVoiceSystem() {
+            isVoiceEnabled = !isVoiceEnabled;
+            const btn = document.getElementById('voiceToggle');
+            if(isVoiceEnabled) {
+                btn.innerText = "🔊 Voice: ON";
+                btn.classList.remove('muted');
+            } else {
+                btn.innerText = "🔇 Voice: OFF";
+                btn.classList.add('muted');
+                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            }
+        }
+
+        function evaluateColorStatus(number, displayElement, isMsg = false) {
+            if (number === "") {
+                displayElement.className = isMsg ? "phone-display-number msg-display-compact color-placeholder" : "phone-display-number color-placeholder";
+                return;
+            }
+            let cleanNum = number.trim().replace(/\+/g, '');
+            let isMatched = false;
+
+            if (cleanNum.startsWith('03') && cleanNum.length === 11) isMatched = true;
+            else if (cleanNum.startsWith('923') && cleanNum.length === 12) isMatched = true;
+
+            let baseClasses = isMsg ? "phone-display-number msg-display-compact" : "phone-display-number";
+            if (isMatched) displayElement.className = `${baseClasses} color-valid`;
+            else displayElement.className = `${baseClasses} color-invalid`;
+        }
+
+        function pressKey(num, module) {
+            if (module === 'call') {
+                callNumber += num;
+                const disp = document.getElementById('callDisplay');
+                disp.innerText = callNumber;
+                evaluateColorStatus(callNumber, disp, false);
+                detectCountryPrefix(callNumber, document.getElementById('callCountryBadge'));
+            } else {
+                msgNumber += num;
+                const disp = document.getElementById('msgDisplay');
+                disp.innerText = msgNumber;
+                evaluateColorStatus(msgNumber, disp, true);
+                detectCountryPrefix(msgNumber, document.getElementById('msgCountryBadge'));
+            }
+            resetUIStyles(module);
+        }
+
+        function pressDelete(module) {
+            if (module === 'call') {
+                callNumber = callNumber.slice(0, -1);
+                const disp = document.getElementById('callDisplay');
+                disp.innerText = callNumber === "" ? "Dial Number..." : callNumber;
+                evaluateColorStatus(callNumber, disp, false);
+                detectCountryPrefix(callNumber, document.getElementById('callCountryBadge'));
+            } else {
+                msgNumber = msgNumber.slice(0, -1);
+                const disp = document.getElementById('msgDisplay');
+                disp.innerText = msgNumber === "" ? "Target Number..." : msgNumber;
+                evaluateColorStatus(msgNumber, disp, true);
+                detectCountryPrefix(msgNumber, document.getElementById('msgCountryBadge'));
+            }
+            resetUIStyles(module);
+        }
+
+        function resetUIStyles(module) {
+            if (module === 'call') {
+                document.getElementById('callAlarmBanner').style.display = 'none';
+                document.getElementById('callStatusAlert').innerText = baseUIDictionary.ready;
+                document.getElementById('callPhoneBody').className = "phone-body";
+            } else {
+                document.getElementById('msgAlarmBanner').style.display = 'none';
+                document.getElementById('msgStatusAlert').innerText = baseUIDictionary.ready;
+                document.getElementById('msgPhoneBody').className = "phone-body";
+            }
+        }
+
+        function playVoiceResponse(textToSpeak) {
+            if (!('speechSynthesis' in window)) return;
+            
+            window.speechSynthesis.cancel(); 
+
+            if (isVoiceEnabled && textToSpeak) {
+                const utterance = new SpeechSynthesisUtterance(textToSpeak);
+                
+                if (selectedLang === 'ur-PK-fallback' || selectedLang === 'hi-IN-fallback') {
+                    let nativeDesiVoice = globalVoicesList.find(v => v.lang.startsWith('en-IN') || v.lang.startsWith('en-GB') || v.lang.startsWith('en-US'));
+                    if(nativeDesiVoice) utterance.voice = nativeDesiVoice;
+                    utterance.lang = nativeDesiVoice ? nativeDesiVoice.lang : 'en-IN';
+                    utterance.rate = 0.82;
+                } else {
+                    utterance.lang = selectedLang;
+                    let matchedVoice = globalVoicesList.find(v => v.lang === selectedLang);
+                    if(matchedVoice) utterance.voice = matchedVoice;
+                    utterance.rate = 0.92;
+                }
+
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function hangUpCall(module) {
+            exitToHome(module);
+        }
+
+        async function saveCallToDatabase(payload) {
+            try {
+                await fetch('http://127.0.0.1:8000/api/dial/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone_number: payload.phone_number })
+                });
+            } catch (error) {
+                console.error("Database alignment failed:", error);
+            }
+        }
+
+        async function saveMessageToDatabase(payload) {
+            try {
+                await fetch('http://127.0.0.1:8000/api/log-message/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        target_number: payload.target_number,
+                        message_payload: payload.message_payload
+                    })
+                });
+            } catch (error) {
+                console.error("Database alignment failed:", error);
+            }
+        }
+
+        function dialSequence(module) {
+            let activeNumber = (module === 'call') ? callNumber : msgNumber;
+            if (activeNumber === "") return;
+
+            let cleanNum = activeNumber.trim().replace(/\+/g, '');
+            let isValid = false;
+
+            if (cleanNum.startsWith('03') && cleanNum.length === 11) isValid = true;
+            else if (cleanNum.startsWith('923') && cleanNum.length === 12) isValid = true;
+
+            const bodyEl = document.getElementById(module === 'call' ? 'callPhoneBody' : 'msgPhoneBody');
+            const alertEl = document.getElementById(module === 'call' ? 'callStatusAlert' : 'msgStatusAlert');
+            const bannerEl = document.getElementById(module === 'call' ? 'callAlarmBanner' : 'msgAlarmBanner');
+
+            if (isValid) {
+                bodyEl.className = "phone-body success-active";
+                alertEl.style.color = "#00ff88";
+                
+                if (module === 'call') {
+                    alertEl.innerText = baseUIDictionary.connected;
+                    let voiceText = getSpokenPhrase('connected', selectedLang);
+                    playVoiceResponse(voiceText);
+                    saveCallToDatabase({ phone_number: callNumber });
+                } else {
+                    alertEl.innerText = baseUIDictionary.dispatched;
+                    let voiceText = getSpokenPhrase('dispatched', selectedLang);
+                    playVoiceResponse(voiceText);
+                    saveMessageToDatabase({
+                        target_number: msgNumber,
+                        message_payload: document.getElementById('smsText').value
+                    });
+                }
+            } else {
+                bodyEl.className = "phone-body alarm-active";
+                alertEl.style.color = "#ff4a5a";
+                alertEl.innerText = baseUIDictionary.blocked;
+                
+                if (module === 'call') {
+                    bannerEl.innerText = "🚨 REJECTED RANGE";
+                    bannerEl.style.display = 'block';
+                    
+                    let voiceText = getSpokenPhrase('wrongNum', selectedLang);
+                    playVoiceResponse(voiceText);
+                    saveCallToDatabase({ phone_number: callNumber });
+                } else {
+                    bannerEl.innerText = "🚨 ATTEMPT BLOCKED";
+                    bannerEl.style.display = 'block';
+                    
+                    let voiceText = getSpokenPhrase('msgFailed', selectedLang);
+                    playVoiceResponse(voiceText);
+                    saveMessageToDatabase({
+                        target_number: msgNumber,
+                        message_payload: document.getElementById('smsText').value
+                    });
+                }
+            }
+        }
+
+        document.addEventListener('keydown', function(event) {
+            let key = event.key;
+            let activeModule = document.getElementById('viewCall').classList.contains('active-view') ? 'call' : 
+                               document.getElementById('viewMessage').classList.contains('active-view') ? 'msg' : null;
+
+            if (!activeModule) return;
+            if (document.activeElement && document.activeElement.id === 'smsText') {
+                if (key === 'Escape') exitToHome('msg');
+                return;
+            }
+
+            if (/[0-9]/.test(key)) pressKey(key, activeModule);
+            else if (key === '+') pressKey('+', activeModule);
+            else if (key === 'Backspace') pressDelete(activeModule);
+            else if (key === 'Enter') dialSequence(activeModule);
+            else if (key === 'Escape') exitToHome(activeModule);
+        });
+    </script>
+</body>
+</html>
