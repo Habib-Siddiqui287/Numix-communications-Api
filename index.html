@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telephony & Messaging Dashboard</title>
+    <title>NUMIX One - Telephony & Messaging</title>
     <style>
         :root {
-            --bg-color: #f8fafc;
+            --bg-color: #f4f7f6;
             --card-bg: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --primary: #10b981;
-            --primary-hover: #059669;
-            --success-color: #10b981;
-            --error-color: #ef4444;
-            --border-color: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --green-primary: #10b981;
+            --green-hover: #059669;
+            --red-primary: #ef4444;
+            --red-hover: #dc2626;
+            --border-color: #e5e7eb;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
         }
 
         * {
@@ -35,320 +35,468 @@
             padding: 1rem;
         }
 
-        .dashboard-container {
+        .numix-container {
             width: 100%;
-            max-width: 480px;
+            max-width: 440px;
             background: var(--card-bg);
-            border-radius: 1rem;
+            border-radius: 1.5rem;
             box-shadow: var(--shadow);
-            padding: 1.5rem;
+            padding: 1.75rem;
             border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
         }
 
-        .active-view {
-            display: block;
-        }
-
-        .header {
-            text-align: center;
+        /* NUMIX Top Navigation Tabs */
+        .numix-tabs {
+            display: flex;
+            background: #f3f4f6;
+            border-radius: 0.85rem;
+            padding: 0.3rem;
             margin-bottom: 1.5rem;
         }
 
-        .header h2 {
-            font-size: 1.25rem;
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 0.65rem;
             font-weight: 600;
-            color: var(--text-main);
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            border-radius: 0.6rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
         }
 
-        .phone-body {
-            background: #f1f5f9;
-            border-radius: 0.75rem;
-            padding: 1rem;
+        .tab-btn.active {
+            background: #ffffff;
+            color: var(--text-main);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .section-view {
+            display: none;
+        }
+
+        .section-view.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Phone & Message Screen Display */
+        .device-screen {
+            background: #fafafa;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            border: 2px solid var(--border-color);
             margin-bottom: 1.25rem;
-            border: 2px solid transparent;
             transition: all 0.3s ease;
         }
 
-        .phone-body.success-active {
-            border-color: var(--success-color);
+        .device-screen.success-state {
+            border-color: var(--green-primary);
             background: #ecfdf5;
         }
 
-        .phone-body.alarm-active {
-            border-color: var(--error-color);
+        .device-screen.error-state {
+            border-color: var(--red-primary);
             background: #fef2f2;
         }
 
-        .display-screen {
-            background: #ffffff;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            text-align: right;
-            font-size: 1.5rem;
+        .status-badge {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+            display: block;
+        }
+
+        .display-output {
+            font-size: 1.75rem;
             font-weight: 500;
-            letter-spacing: 1px;
-            margin-bottom: 1rem;
-            border: 1px solid var(--border-color);
-            min-height: 60px;
+            letter-spacing: 1.5px;
+            text-align: right;
+            min-height: 50px;
+            word-break: break-all;
+            color: var(--text-main);
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            word-break: break-all;
         }
 
-        .status-panel {
-            font-size: 0.875rem;
-            color: var(--text-muted);
-            margin-bottom: 0.5rem;
-            display: flex;
-            justify-content: space-between;
+        /* 2D Ringing Wave Animation Container */
+        .wave-animation-box {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            height: 35px;
+            margin-top: 0.75rem;
         }
 
-        .keypad {
+        .wave-bar {
+            width: 5px;
+            height: 10px;
+            background: var(--green-primary);
+            border-radius: 3px;
+            animation: waveBounce 0.8s infinite ease-in-out alternate;
+        }
+
+        .wave-bar:nth-child(2) { animation-delay: 0.2s; }
+        .wave-bar:nth-child(3) { animation-delay: 0.4s; }
+        .wave-bar:nth-child(4) { animation-delay: 0.6s; }
+
+        @keyframes waveBounce {
+            0% { height: 8px; }
+            100% { height: 30px; }
+        }
+
+        /* Keypad Grid Styling */
+        .keypad-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 0.75rem;
-            margin-bottom: 1rem;
+            margin-bottom: 1.25rem;
         }
 
         .key-btn {
             background: #ffffff;
             border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            padding: 1rem;
-            font-size: 1.125rem;
+            border-radius: 0.75rem;
+            padding: 0.9rem;
+            font-size: 1.2rem;
             font-weight: 600;
             color: var(--text-main);
             cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
+            transition: all 0.15s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+
+        .key-btn:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
         }
 
         .key-btn:active {
-            background: #e2e8f0;
-            transform: scale(0.97);
+            transform: scale(0.95);
+            background: #f1f5f9;
         }
 
-        .action-buttons {
+        /* Message Textarea Container */
+        .msg-input-area {
+            width: 100%;
+            height: 120px;
+            border: 1px solid var(--border-color);
+            border-radius: 0.85rem;
+            padding: 0.85rem;
+            font-size: 1rem;
+            resize: none;
+            outline: none;
+            background: #ffffff;
+            color: var(--text-main);
+            margin-bottom: 1.25rem;
+            transition: border-color 0.2s;
+        }
+
+        .msg-input-area:focus {
+            border-color: var(--green-primary);
+        }
+
+        /* Action Controls (Green Caller Icon & Red Cancel Icon) */
+        .action-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 0.75rem;
         }
 
-        .btn {
-            padding: 0.75rem 1rem;
+        .action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 0.85rem;
             border: none;
-            border-radius: 0.5rem;
+            border-radius: 0.75rem;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 1rem;
             cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .btn-primary {
-            background: var(--primary);
             color: white;
+            transition: transform 0.15s ease, background 0.2s ease;
         }
 
-        .btn-primary:hover {
-            background: var(--primary-hover);
+        .action-btn:active {
+            transform: scale(0.97);
         }
 
-        .btn-danger {
-            background: var(--error-color);
-            color: white;
+        .btn-cancel {
+            background: var(--red-primary);
+        }
+        .btn-cancel:hover {
+            background: var(--red-hover);
         }
 
-        .btn-danger:hover {
-            background: #dc2626;
+        .btn-execute {
+            background: var(--green-primary);
+        }
+        .btn-execute:hover {
+            background: var(--green-hover);
         }
 
-        .stats-grid {
+        .action-icon {
+            font-size: 1.1rem;
+        }
+
+        /* Statistics Counter Widget */
+        .stats-footer {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 0.5rem;
-            margin-top: 1rem;
+            margin-top: 1.25rem;
             text-align: center;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            padding-top: 1rem;
         }
 
-        .stats-grid div {
-            background: #f8fafc;
-            padding: 0.5rem;
-            border-radius: 0.4rem;
+        .stats-footer div {
+            background: #f9fafb;
+            padding: 0.4rem;
+            border-radius: 0.5rem;
             border: 1px solid var(--border-color);
         }
 
-        .stats-grid span {
+        .stats-footer span {
             display: block;
             font-weight: 700;
             color: var(--text-main);
-            font-size: 1rem;
+            font-size: 0.95rem;
         }
     </style>
 </head>
 <body>
 
-    <div class="dashboard-container">
-        <div id="viewDashboard" class="active-view">
-            <div class="header">
-                <h2 id="lblContext">Voice Channel Ready</h2>
-            </div>
+    <div class="numix-container">
+        <!-- Tab Switcher between Call and Message sections -->
+        <div class="numix-tabs">
+            <button class="tab-btn active" onclick="switchNumixMode('call')">Call Center</button>
+            <button class="tab-btn" onclick="switchNumixMode('message')">Message Hub</button>
+        </div>
 
-            <div id="callPhoneBody" class="phone-body">
-                <div class="status-panel">
-                    <span id="callStatusAlert">Enter number</span>
-                </div>
-                <div id="displayScreen" class="display-screen"></div>
+        <!-- ==================== CALL SECTION ==================== -->
+        <div id="sectionCall" class="section-view active">
+            <div id="callScreenBox" class="device-screen">
+                <span id="callStatusLabel" class="status-badge">Ready to Dial</span>
+                <div id="callDisplay" class="display-output"></div>
                 
-                <div class="keypad">
-                    <button class="key-btn" onclick="pressKey('1')">1</button>
-                    <button class="key-btn" onclick="pressKey('2')">2</button>
-                    <button class="key-btn" onclick="pressKey('3')">3</button>
-                    <button class="key-btn" onclick="pressKey('4')">4</button>
-                    <button class="key-btn" onclick="pressKey('5')">5</button>
-                    <button class="key-btn" onclick="pressKey('6')">6</button>
-                    <button class="key-btn" onclick="pressKey('7')">7</button>
-                    <button class="key-btn" onclick="pressKey('8')">8</button>
-                    <button class="key-btn" onclick="pressKey('9')">9</button>
-                    <button class="key-btn" onclick="pressKey('+')">+</button>
-                    <button class="key-btn" onclick="pressKey('0')">0</button>
-                    <button class="key-btn" onclick="pressDelete()">⌫</button>
-                </div>
-
-                <div class="action-buttons">
-                    <button class="btn btn-danger" onclick="terminateCallSession()">Cancel</button>
-                    <button class="btn btn-primary" onclick="executeSystemAction()">Execute</button>
+                <!-- 2D Ringing Wave Animation -->
+                <div id="callWaveBox" class="wave-animation-box">
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
                 </div>
             </div>
 
-            <div class="stats-grid">
-                <div>Total <span id="statTotal">0</span></div>
-                <div>Success <span id="statSuccess" style="color: var(--success-color);">0</span></div>
-                <div>Failed <span id="statFailed" style="color: var(--error-color);">0</span></div>
+            <div class="keypad-grid">
+                <button class="key-btn" onclick="appendKey('1')">1</button>
+                <button class="key-btn" onclick="appendKey('2')">2</button>
+                <button class="key-btn" onclick="appendKey('3')">3</button>
+                <button class="key-btn" onclick="appendKey('4')">4</button>
+                <button class="key-btn" onclick="appendKey('5')">5</button>
+                <button class="key-btn" onclick="appendKey('6')">6</button>
+                <button class="key-btn" onclick="appendKey('7')">7</button>
+                <button class="key-btn" onclick="appendKey('8')">8</button>
+                <button class="key-btn" onclick="appendKey('9')">9</button>
+                <button class="key-btn" onclick="appendKey('+')">+</button>
+                <button class="key-btn" onclick="appendKey('0')">0</button>
+                <button class="key-btn" onclick="deleteKey()">⌫</button>
             </div>
+
+            <div class="action-row">
+                <button class="action-btn btn-cancel" onclick="cancelSystemAction()">
+                    <span class="action-icon">🔴</span> Cancel
+                </button>
+                <button class="action-btn btn-execute" onclick="executeSystemAction()">
+                    <span class="action-icon">🟢</span> Call
+                </button>
+            </div>
+        </div>
+
+        <!-- ==================== MESSAGE SECTION ==================== -->
+        <div id="sectionMessage" class="section-view">
+            <div id="msgScreenBox" class="device-screen">
+                <span id="msgStatusLabel" class="status-badge">Compose Message Payload</span>
+                <textarea id="msgBodyInput" class="msg-input-area" placeholder="Type your text message here..."></textarea>
+                
+                <!-- 2D Sending Animation -->
+                <div id="msgWaveBox" class="wave-animation-box">
+                    <div class="wave-bar" style="background: var(--green-primary);"></div>
+                    <div class="wave-bar" style="background: var(--green-primary);"></div>
+                    <div class="wave-bar" style="background: var(--green-primary);"></div>
+                    <div class="wave-bar" style="background: var(--green-primary);"></div>
+                </div>
+            </div>
+
+            <div class="action-row">
+                <button class="action-btn btn-cancel" onclick="cancelSystemAction()">
+                    <span class="action-icon">🔴</span> Clear
+                </button>
+                <button class="action-btn btn-execute" onclick="executeSystemAction()">
+                    <span class="action-icon">🟢</span> Send
+                </button>
+            </div>
+        </div>
+
+        <!-- Live Counters Footer -->
+        <div class="stats-footer">
+            <div>Total <span id="statTotal">0</span></div>
+            <div>Success <span id="statSuccess" style="color: var(--green-primary);">0</span></div>
+            <div>Failed <span id="statFailed" style="color: var(--red-primary);">0</span></div>
         </div>
     </div>
 
     <script>
-        let callNumber = "";
-        let currentModuleMode = 'call';
-        let selectedLang = 'en';
-        let activeBeepTimeouts = [];
-        let cumulativeCounters = { total: 0, success: 0, failed: 0 };
+        let currentMode = 'call';
+        let inputValue = "";
+        let activeTimeouts = [];
+        let counters = { total: 0, success: 0, failed: 0 };
 
-        function checkInputFormatPattern(num) {
-            // Basic international / local validation check (e.g. min length 7 digits)
-            const cleanNum = num.replace(/\D/g, '');
-            return cleanNum.length >= 7;
-        }
+        function switchNumixMode(mode) {
+            currentMode = mode;
+            cancelSystemAction(); // Reset state cleanly on switch
 
-        function pressKey(val) {
-            if (callNumber.length < 15) {
-                callNumber += val;
-                updateDisplay();
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.section-view').forEach(sec => sec.classList.remove('active'));
+
+            if (mode === 'call') {
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+                document.getElementById('sectionCall').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+                document.getElementById('sectionMessage').classList.add('active');
             }
         }
 
-        function pressDelete() {
-            callNumber = callNumber.slice(0, -1);
-            updateDisplay();
+        function appendKey(val) {
+            if (currentMode === 'call' && inputValue.length < 15) {
+                inputValue += val;
+                document.getElementById('callDisplay').innerText = inputValue;
+            }
         }
 
-        function updateDisplay() {
-            document.getElementById('displayScreen').innerText = callNumber;
+        function deleteKey() {
+            if (currentMode === 'call') {
+                inputValue = inputValue.slice(0, -1);
+                document.getElementById('callDisplay').innerText = inputValue;
+            }
         }
 
-        function forceKillAudioEngine() {
-            // Clear all pending ringing timeouts instantly upon cancel/terminate
-            activeBeepTimeouts.forEach(timeoutId => clearTimeout(timeoutId));
-            activeBeepTimeouts = [];
+        function clearAllTimeouts() {
+            activeTimeouts.forEach(id => clearTimeout(id));
+            activeTimeouts = [];
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
             }
         }
 
-        function playVoiceResponse(text) {
+        function cancelSystemAction() {
+            clearAllTimeouts();
+            
+            if (currentMode === 'call') {
+                inputValue = "";
+                document.getElementById('callDisplay').innerText = "";
+                let screenBox = document.getElementById('callScreenBox');
+                screenBox.className = "device-screen";
+                document.getElementById('callStatusLabel').innerText = "Ready to Dial";
+                document.getElementById('callWaveBox').style.display = "none";
+            } else {
+                document.getElementById('msgBodyInput').value = "";
+                let screenBox = document.getElementById('msgScreenBox');
+                screenBox.className = "device-screen";
+                document.getElementById('msgStatusLabel').innerText = "Compose Message Payload";
+                document.getElementById('msgWaveBox').style.display = "none";
+            }
+        }
+
+        function speakText(text) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 let utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = selectedLang === 'ur' ? 'ur-PK' : 'en-US';
+                utterance.lang = 'en-US';
                 window.speechSynthesis.speak(utterance);
             }
         }
 
-        function playTelephonyBeepSequence(times) {
-            for (let i = 0; i < times; i++) {
-                let tid = setTimeout(() => {
-                    // Check if session hasn't been terminated
-                    playVoiceResponse("Ringing...");
-                }, i * 2500);
-                activeBeepTimeouts.push(tid);
+        // Exact Ringing Sequence: Max 3 rings, stops immediately if cancelled
+        function startRingingSequence() {
+            let waveBox = currentMode === 'call' ? document.getElementById('callWaveBox') : document.getElementById('msgWaveBox');
+            waveBox.style.display = "flex";
+
+            for (let i = 0; i < 3; i++) {
+                let ringTimer = setTimeout(() => {
+                    let phrase = currentMode === 'call' ? "Your dialed number is correct. Ringing..." : "Message transmission active. Ringing...";
+                    speakText(phrase);
+                }, i * 3000);
+                activeTimeouts.push(ringTimer);
             }
-        }
 
-        function terminateCallSession() {
-            forceKillAudioEngine();
-            callNumber = "";
-            updateDisplay();
-
-            const bodyEl = document.getElementById('callPhoneBody');
-            bodyEl.className = "phone-body";
-            document.getElementById('callStatusAlert').innerText = "Cancelled / Reset";
-            document.getElementById('lblContext').innerText = "Voice Channel Ready";
+            // Auto-stop wave animation after 3 rings complete
+            let stopTimer = setTimeout(() => {
+                waveBox.style.display = "none";
+            }, 9000);
+            activeTimeouts.push(stopTimer);
         }
 
         function executeSystemAction() {
-            if (callNumber === "") return;
-            let isValid = checkInputFormatPattern(callNumber);
+            clearAllTimeouts();
+            counters.total++;
 
-            const bodyEl = document.getElementById('callPhoneBody');
-            const alertEl = document.getElementById('callStatusAlert');
-            const lblContext = document.getElementById('lblContext');
+            let dataToCheck = currentMode === 'call' ? inputValue : document.getElementById('msgBodyInput').value.trim();
+            let isValid = currentMode === 'call' ? (dataToCheck.length >= 7) : (dataToCheck.length > 0);
 
-            forceKillAudioEngine();
-            cumulativeCounters.total++;
+            let screenBox = currentMode === 'call' ? document.getElementById('callScreenBox') : document.getElementById('msgScreenBox');
+            let statusLabel = currentMode === 'call' ? document.getElementById('callStatusLabel') : document.getElementById('msgStatusLabel');
+            let waveBox = currentMode === 'call' ? document.getElementById('callWaveBox') : document.getElementById('msgWaveBox');
 
-            bodyEl.classList.remove('success-active', 'alarm-active');
+            screenBox.classList.remove('success-state', 'error-state');
 
             if (isValid) {
-                cumulativeCounters.success++;
-                bodyEl.className = "phone-body success-active";
-                alertEl.style.color = "var(--success-color)";
-                alertEl.innerText = "Number is correct";
-                lblContext.innerText = "Voice Channel Up (Green Verified)";
+                counters.success++;
+                screenBox.className = "device-screen success-state";
+                statusLabel.style.color = "var(--green-primary)";
+                statusLabel.innerText = currentMode === 'call' ? "Number Correct (Green Verified)" : "Message Payload Validated";
                 
-                playVoiceResponse("Your dialed number is correct.");
+                speakText(currentMode === 'call' ? "Your dialed number is correct." : "Message validated successfully.");
                 
-                // Ring exactly 3 times max, strictly adhering to cancellation safety
-                let initialDelay = setTimeout(() => {
-                    playTelephonyBeepSequence(3);
-                }, 2000);
-                activeBeepTimeouts.push(initialDelay);
+                // Trigger 3 ringing rounds with safety cancel bindings
+                let ringDelay = setTimeout(() => {
+                    startRingingSequence();
+                }, 1500);
+                activeTimeouts.push(ringDelay);
 
             } else {
-                cumulativeCounters.failed++;
-                bodyEl.className = "phone-body alarm-active";
-                alertEl.style.color = "var(--error-color)";
-                alertEl.innerText = "Blocked / Invalid Format";
-                lblContext.innerText = "Format Pattern Dropout";
+                counters.failed++;
+                screenBox.className = "device-screen error-state";
+                statusLabel.style.color = "var(--red-primary)";
+                statusLabel.innerText = "Error: Input format invalid";
+                waveBox.style.display = "none";
                 
-                playVoiceResponse("Incorrect number format.");
+                speakText("Incorrect input format.");
             }
 
-            document.getElementById('statTotal').innerText = cumulativeCounters.total;
-            document.getElementById('statSuccess').innerText = cumulativeCounters.success;
-            document.getElementById('statFailed').innerText = cumulativeCounters.failed;
+            document.getElementById('statTotal').innerText = counters.total;
+            document.getElementById('statSuccess').innerText = counters.success;
+            document.getElementById('statFailed').innerText = counters.failed;
         }
-
-        document.addEventListener('keydown', function(event) {
-            let key = event.key;
-            if (/[0-9]/.test(key)) pressKey(key);
-            else if (key === '+') pressKey('+');
-            else if (key === 'Backspace') pressDelete();
-            else if (key === 'Enter') executeSystemAction();
-            else if (key === 'Escape') terminateCallSession();
-        });
     </script>
 </body>
 </html>
