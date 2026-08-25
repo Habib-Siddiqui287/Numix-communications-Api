@@ -6,15 +6,15 @@
     <title>NUMIX - Phone Number Validity & Messaging</title>
     <style>
         :root {
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
             --primary-green: #10b981;
             --primary-green-hover: #059669;
             --accent-red: #ef4444;
-            --border-color: #e2e8f0;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            --border-color: #334155;
+            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
         }
 
         * {
@@ -36,11 +36,11 @@
 
         .app-container {
             width: 100%;
-            max-width: 480px;
+            max-width: 440px;
             background: var(--card-bg);
             border-radius: 1.5rem;
             box-shadow: var(--shadow);
-            padding: 2rem;
+            padding: 1.75rem;
             border: 1px solid var(--border-color);
             position: relative;
             overflow: hidden;
@@ -60,25 +60,25 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- HOME PAGE STYLING (Matching your photo) --- */
+        /* --- HOME PAGE STYLING --- */
         .home-header {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 1.75rem;
         }
 
         .home-logo {
-            font-size: 2.5rem;
+            font-size: 2.25rem;
             font-weight: 800;
             letter-spacing: 2px;
             color: var(--text-main);
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, #10b981, #059669);
+            margin-bottom: 0.3rem;
+            background: linear-gradient(135deg, #34d399, #059669);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .home-subtitle {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--text-muted);
             font-weight: 500;
         }
@@ -87,14 +87,14 @@
             display: flex;
             flex-direction: column;
             gap: 1rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
         }
 
         .nav-card {
-            background: #f1f5f9;
+            background: #0f172a;
             border: 2px solid var(--border-color);
             border-radius: 1rem;
-            padding: 1.5rem;
+            padding: 1.25rem;
             text-align: center;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -105,20 +105,19 @@
 
         .nav-card:hover {
             border-color: var(--primary-green);
-            background: #ecfdf5;
             transform: translateY(-2px);
         }
 
         .nav-card-icon {
-            font-size: 2rem;
-            background: #ffffff;
-            padding: 0.75rem;
+            font-size: 1.75rem;
+            background: #1e293b;
+            padding: 0.65rem;
             border-radius: 0.75rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
         }
 
         .nav-card-info h3 {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             font-weight: 700;
             color: var(--text-main);
             margin-bottom: 0.2rem;
@@ -126,12 +125,12 @@
         }
 
         .nav-card-info p {
-            font-size: 0.825rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
             text-align: left;
         }
 
-        /* --- DIALER / MODULE VIEW --- */
+        /* --- MODULE / DIALER VIEW --- */
         .module-top-bar {
             display: flex;
             justify-content: space-between;
@@ -140,56 +139,72 @@
         }
 
         .back-btn {
-            background: #f1f5f9;
+            background: #0f172a;
             border: 1px solid var(--border-color);
-            padding: 0.5rem 1rem;
+            padding: 0.45rem 0.85rem;
             border-radius: 0.5rem;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             cursor: pointer;
             color: var(--text-main);
             transition: background 0.2s;
         }
 
         .back-btn:hover {
-            background: #e2e8f0;
+            background: #1e293b;
         }
 
         .device-screen {
-            background: #f8fafc;
+            background: #0f172a;
             border-radius: 1rem;
-            padding: 1.25rem;
+            padding: 1.15rem;
             border: 2px solid var(--border-color);
-            margin-bottom: 1.25rem;
+            margin-bottom: 1.15rem;
             transition: all 0.3s ease;
         }
 
         .device-screen.valid-green {
             border-color: var(--primary-green);
-            background: #ecfdf5;
+            background: rgba(16, 185, 129, 0.05);
         }
 
         .device-screen.invalid-red {
             border-color: var(--accent-red);
-            background: #fef2f2;
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .screen-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.4rem;
         }
 
         .status-badge {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             color: var(--text-muted);
-            margin-bottom: 0.4rem;
-            display: block;
+        }
+
+        /* Country Name Tag on top right corner */
+        .country-tag {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--primary-green);
+            background: rgba(16, 185, 129, 0.15);
+            padding: 0.15rem 0.5rem;
+            border-radius: 0.3rem;
+            display: none;
         }
 
         .display-output {
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             font-weight: 600;
             letter-spacing: 1px;
             text-align: right;
-            min-height: 45px;
+            min-height: 40px;
             word-break: break-all;
             color: var(--text-main);
             display: flex;
@@ -197,19 +212,19 @@
             justify-content: flex-end;
         }
 
-        /* Ringing / Sending Wave Animation */
+        /* Wave / Ringing Animation */
         .wave-box {
             display: none;
             align-items: center;
             justify-content: center;
             gap: 4px;
-            height: 30px;
-            margin-top: 0.75rem;
+            height: 25px;
+            margin-top: 0.5rem;
         }
 
         .wave-bar {
             width: 4px;
-            height: 8px;
+            height: 6px;
             background: var(--primary-green);
             border-radius: 2px;
             animation: bounce 0.8s infinite ease-in-out alternate;
@@ -221,59 +236,59 @@
 
         @keyframes bounce {
             0% { height: 6px; }
-            100% { height: 26px; }
+            100% { height: 22px; }
         }
 
-        /* Keypad */
+        /* Keypad Grid */
         .keypad-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 0.75rem;
-            margin-bottom: 1.25rem;
+            gap: 0.65rem;
+            margin-bottom: 1.15rem;
         }
 
         .key-btn {
-            background: #ffffff;
+            background: #0f172a;
             border: 1px solid var(--border-color);
             border-radius: 0.75rem;
-            padding: 0.85rem;
-            font-size: 1.15rem;
+            padding: 0.75rem;
+            font-size: 1.1rem;
             font-weight: 600;
             color: var(--text-main);
             cursor: pointer;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
             transition: all 0.15s ease;
         }
 
         .key-btn:hover {
-            background: #f1f5f9;
-            border-color: #cbd5e1;
+            background: #1e293b;
+            border-color: #475569;
         }
 
         .key-btn:active {
-            transform: scale(0.96);
+            transform: scale(0.95);
+            background: #334155;
         }
 
-        /* Message Input */
+        /* Message Textarea */
         .msg-input-area {
             width: 100%;
-            height: 110px;
+            height: 100px;
             border: 1px solid var(--border-color);
             border-radius: 0.75rem;
-            padding: 0.85rem;
-            font-size: 0.95rem;
+            padding: 0.75rem;
+            font-size: 0.9rem;
             resize: none;
             outline: none;
-            background: #ffffff;
+            background: #0f172a;
             color: var(--text-main);
-            margin-bottom: 1.25rem;
+            margin-bottom: 1.15rem;
         }
 
         .msg-input-area:focus {
             border-color: var(--primary-green);
         }
 
-        /* Action Buttons */
+        /* Action Controls */
         .action-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -285,11 +300,11 @@
             align-items: center;
             justify-content: center;
             gap: 6px;
-            padding: 0.85rem;
+            padding: 0.75rem;
             border: none;
             border-radius: 0.75rem;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             cursor: pointer;
             color: white;
             transition: transform 0.15s ease, opacity 0.2s;
@@ -318,17 +333,17 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 0.5rem;
-            margin-top: 1.25rem;
+            margin-top: 1rem;
             text-align: center;
             font-size: 0.75rem;
             color: var(--text-muted);
             border-top: 1px solid var(--border-color);
-            padding-top: 1rem;
+            padding-top: 0.85rem;
         }
 
         .stats-footer div {
-            background: #f8fafc;
-            padding: 0.4rem;
+            background: #0f172a;
+            padding: 0.35rem;
             border-radius: 0.4rem;
             border: 1px solid var(--border-color);
         }
@@ -337,7 +352,7 @@
             display: block;
             font-weight: 700;
             color: var(--text-main);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
     </style>
 </head>
@@ -348,39 +363,42 @@
         <div id="viewHome" class="view-section active">
             <div class="home-header">
                 <div class="home-logo">NUMIX</div>
-                <div class="home-subtitle">Phone Number Validity & Verification API</div>
+                <div class="home-subtitle">Phone Number Validity & International API</div>
             </div>
 
             <div class="home-nav-cards">
                 <div class="nav-card" onclick="openModule('call')">
                     <div class="nav-card-icon">📞</div>
                     <div class="nav-card-info">
-                        <h3>Open Voice Dialer Hub</h3>
-                        <p>Verify country codes, digit length limits & test live dialing.</p>
+                        <h3>Voice Dialer Hub</h3>
+                        <p>Verify world country codes, digit length rules & live ring tones.</p>
                     </div>
                 </div>
 
                 <div class="nav-card" onclick="openModule('message')">
                     <div class="nav-card-icon">💬</div>
                     <div class="nav-card-info">
-                        <h3>Open Message Desk</h3>
-                        <p>Validate text payload formats and transmission responses.</p>
+                        <h3>Message Desk</h3>
+                        <p>Validate text payload formats and transmission status.</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- ==================== MODULE PAGE (DIALER / MESSAGE) ==================== -->
+        <!-- ==================== MODULE PAGE ==================== -->
         <div id="viewModule" class="view-section">
             <div class="module-top-bar">
                 <button class="back-btn" onclick="goHome()">← Back Home</button>
-                <span id="moduleTitle" style="font-weight: 700; font-size: 0.95rem; color: var(--text-muted);">Voice Dialer Hub</span>
+                <span id="moduleTitle" style="font-weight: 600; font-size: 0.85rem; color: var(--text-muted);">Voice Dialer Hub</span>
             </div>
 
             <!-- Call Container -->
             <div id="moduleCallContent">
                 <div id="callScreenBox" class="device-screen">
-                    <span id="callStatusLabel" class="status-badge">Ready to Dial (+Country Code)</span>
+                    <div class="screen-header-row">
+                        <span id="callStatusLabel" class="status-badge">Ready to Dial</span>
+                        <span id="countryBadge" class="country-tag">Unknown</span>
+                    </div>
                     <div id="callDisplay" class="display-output"></div>
                     <div id="callWaveBox" class="wave-box">
                         <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
@@ -406,7 +424,9 @@
             <!-- Message Container -->
             <div id="moduleMsgContent" style="display: none;">
                 <div id="msgScreenBox" class="device-screen">
-                    <span id="msgStatusLabel" class="status-badge">Compose Message Payload</span>
+                    <div class="screen-header-row">
+                        <span id="msgStatusLabel" class="status-badge">Compose Message Payload</span>
+                    </div>
                     <textarea id="msgBodyInput" class="msg-input-area" placeholder="Type text payload here..."></textarea>
                     <div id="msgWaveBox" class="wave-box">
                         <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
@@ -434,6 +454,92 @@
     </div>
 
     <script>
+        // Web Audio API context for real-time keypad beeps and ringing tones
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        // Play a short DTMF digit entry beep
+        function playDigitBeep() {
+            try {
+                initAudio();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.value = 850; // standard tone pitch
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.1);
+            } catch (e) {
+                console.log("Audio context note error", e);
+            }
+        }
+
+        // Play a real telephone ringing tone (dual frequency oscillator pattern)
+        let ringInterval = null;
+        function playRingingTone() {
+            try {
+                initAudio();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                
+                // Play a standard dual-tone ring cadence (440Hz + 480Hz)
+                let osc1 = audioCtx.createOscillator();
+                let osc2 = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+
+                osc1.type = 'sine';
+                osc1.frequency.value = 440;
+                osc2.type = 'sine';
+                osc2.frequency.value = 480;
+
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.2);
+
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc1.start();
+                osc2.start();
+                osc1.stop(audioCtx.currentTime + 1.2);
+                osc2.stop(audioCtx.currentTime + 1.2);
+            } catch (e) {
+                console.log("Ring tone error", e);
+            }
+        }
+
+        // Famous 20 Country Codes mapping database
+        const countryDatabase = [
+            { code: '+92', name: 'Pakistan', minLen: 12, maxLen: 12 },
+            { code: '+91', name: 'India', minLen: 13, maxLen: 13 },
+            { code: '+1', name: 'USA / Canada', minLen: 12, maxLen: 12 },
+            { code: '+44', name: 'United Kingdom', minLen: 13, maxLen: 14 },
+            { code: '+966', name: 'Saudi Arabia', minLen: 13, maxLen: 13 },
+            { code: '+971', name: 'United Arab Emirates', minLen: 12, maxLen: 12 },
+            { code: '+86', name: 'China', minLen: 14, maxLen: 14 },
+            { code: '+81', name: 'Japan', minLen: 12, maxLen: 13 },
+            { code: '+49', name: 'Germany', minLen: 12, maxLen: 14 },
+            { code: '+33', name: 'France', minLen: 11, maxLen: 11 },
+            { code: '+61', name: 'Australia', minLen: 11, maxLen: 11 },
+            { code: '+55', name: 'Brazil', minLen: 13, maxLen: 14 },
+            { code: '+7', name: 'Russia', minLen: 12, maxLen: 12 },
+            { code: '+39', name: 'Italy', minLen: 11, maxLen: 13 },
+            { code: '+34', name: 'Spain', minLen: 10, maxLen: 10 },
+            { code: '+82', name: 'South Korea', minLen: 12, maxLen: 13 },
+            { code: '+20', name: 'Egypt', minLen: 13, maxLen: 13 },
+            { code: '+27', name: 'South Africa', minLen: 11, maxLen: 11 },
+            { code: '+90', name: 'Turkey', minLen: 12, maxLen: 12 },
+            { code: '+52', name: 'Mexico', minLen: 12, maxLen: 13 }
+        ];
+
         let currentMode = 'call';
         let inputValue = "";
         let activeTimeouts = [];
@@ -464,25 +570,55 @@
             document.getElementById('viewHome').classList.add('active');
         }
 
+        // Live detection of matching country code as user inputs prefix numbers
+        function updateCountryBadge(numStr) {
+            let badge = document.getElementById('countryBadge');
+       let matchedCountry = null;
+
+            // Sort by code length descending so longer codes (e.g. +966) check before shorter (+9)
+            let sortedCountries = [...countryDatabase].sort((a, b) => b.code.length - a.code.length);
+
+            for (let c of sortedCountries) {
+                if (numStr.startsWith(c.code)) {
+                    matchedCountry = c;
+                    break;
+                }
+            }
+
+            if (matchedCountry) {
+                badge.innerText = matchedCountry.name;
+                badge.style.display = 'inline-block';
+                return matchedCountry;
+            } else {
+                badge.style.display = 'none';
+                return null;
+            }
+        }
+
         function appendKey(val) {
-            if (currentMode === 'call' && inputValue.length < 15) {
+            if (currentMode === 'call' && inputValue.length < 16) {
+                playDigitBeep();
                 inputValue += val;
                 document.getElementById('callDisplay').innerText = inputValue;
+                updateCountryBadge(inputValue);
             }
         }
 
         function deleteKey() {
-            if (currentMode === 'call') {
+            if (currentMode === 'call' && inputValue.length > 0) {
+                playDigitBeep();
                 inputValue = inputValue.slice(0, -1);
                 document.getElementById('callDisplay').innerText = inputValue;
+                updateCountryBadge(inputValue);
             }
         }
 
         function clearAudioEngine() {
             activeTimeouts.forEach(id => clearTimeout(id));
             activeTimeouts = [];
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
+            if (ringInterval) {
+                clearInterval(ringInterval);
+                ringInterval = null;
             }
         }
 
@@ -494,7 +630,8 @@
                 document.getElementById('callDisplay').innerText = "";
                 let screen = document.getElementById('callScreenBox');
                 screen.className = "device-screen";
-                document.getElementById('callStatusLabel').innerText = "Ready to Dial (+Country Code)";
+                document.getElementById('callStatusLabel').innerText = "Ready to Dial";
+                document.getElementById('countryBadge').style.display = "none";
                 document.getElementById('callWaveBox').style.display = "none";
             } else {
                 document.getElementById('msgBodyInput').value = "";
@@ -505,28 +642,26 @@
             }
         }
 
-        function playVoice(text) {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                let utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'en-US';
-                window.speechSynthesis.speak(utterance);
-            }
-        }
-
-        function startRingingSequence() {
+        // Trigger real ringing tone loop (Max 3 iterations)
+        function startRealRingingTune() {
             let waveBox = currentMode === 'call' ? document.getElementById('callWaveBox') : document.getElementById('msgWaveBox');
             waveBox.style.display = "flex";
 
-            // Exactly 3 ring loops, safely terminating if cancelled
-            for (let i = 0; i < 3; i++) {
-                let tid = setTimeout(() => {
-                    let phrase = currentMode === 'call' ? "Ringing..." : "Transmitting message...";
-                    playVoice(phrase);
-                }, i * 2500);
-                activeTimeouts.push(tid);
-            }
+            playRingingTone(); // Play 1st ring instantly
+            let ringCount = 1;
 
+            ringInterval = setInterval(() => {
+                if (ringCount < 3) {
+                    playRingingTone();
+                    ringCount++;
+                } else {
+                    clearInterval(ringInterval);
+                    ringInterval = null;
+                }
+            }, 2500);
+            activeTimeouts.push(ringInterval);
+
+            // Auto turn off wave animation after 3 rings complete (~7.5 seconds)
             let stopTid = setTimeout(() => {
                 waveBox.style.display = "none";
             }, 7500);
@@ -538,8 +673,17 @@
             counters.total++;
 
             let content = currentMode === 'call' ? inputValue : document.getElementById('msgBodyInput').value.trim();
-            // Basic validity check: Must include formatting/digits (e.g. valid country prefix or length)
-            let isValid = currentMode === 'call' ? (content.length >= 8 && content.startsWith('+')) : (content.length > 0);
+            let matchedCountry = currentMode === 'call' ? updateCountryBadge(content) : null;
+            
+            // Validation rules: must match a recognized country code and exact total digit limits
+            let isValid = false;
+            if (currentMode === 'call' && matchedCountry) {
+                if (content.length >= matchedCountry.minLen && content.length <= matchedCountry.maxLen) {
+                    isValid = true;
+                }
+            } else if (currentMode === 'message' && content.length > 0) {
+                isValid = true;
+            }
 
             let screen = currentMode === 'call' ? document.getElementById('callScreenBox') : document.getElementById('msgScreenBox');
             let statusLabel = currentMode === 'call' ? document.getElementById('callStatusLabel') : document.getElementById('msgStatusLabel');
@@ -551,23 +695,20 @@
                 counters.success++;
                 screen.className = "device-screen valid-green";
                 statusLabel.style.color = "var(--primary-green)";
-                statusLabel.innerText = currentMode === 'call' ? "Country & Number Validated (Green)" : "Message Payload Valid";
+                statusLabel.innerText = currentMode === 'call' ? `Verified: ${matchedCountry.name} Number` : "Message Payload Validated";
 
-                playVoice("Your dialed number is correct.");
-
+                // Start the real-time ringing tune
                 let delayTid = setTimeout(() => {
-                    startRingingSequence();
-                }, 1200);
+                    startRealRingingTune();
+                }, 600);
                 activeTimeouts.push(delayTid);
 
             } else {
                 counters.failed++;
                 screen.className = "device-screen invalid-red";
                 statusLabel.style.color = "var(--accent-red)";
-                statusLabel.innerText = "Error: Invalid format or missing country code (+)";
+                statusLabel.innerText = currentMode === 'call' ? "Error: Invalid prefix or digit length" : "Error: Empty payload";
                 waveBox.style.display = "none";
-
-                playVoice("Incorrect number format.");
             }
 
             document.getElementById('statTotal').innerText = counters.total;
