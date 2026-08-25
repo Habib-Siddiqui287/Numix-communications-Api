@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>NUMIX - Phone Number Validity & Messaging</title>
+    <title>NUMIX - Phone Number Validity & Messaging API</title>
     <style>
         :root {
-            --bg-color: #0b0f19;
-            --card-bg: #111827;
-            --text-main: #f9fafb;
-            --text-muted: #9ca3af;
+            --bg-color: #07090e;
+            --card-bg: #0f172a;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
             --primary-green: #10b981;
             --primary-green-hover: #059669;
             --accent-red: #ef4444;
-            --border-color: #1f2937;
-            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            --border-color: #1e293b;
+            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
         }
 
         * {
@@ -50,7 +50,7 @@
 
         .home-header {
             text-align: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.75rem;
         }
 
         .home-logo {
@@ -67,7 +67,7 @@
         }
 
         .nav-card {
-            background: #0b0f19;
+            background: #07090e;
             border: 2px solid var(--border-color);
             border-radius: 1rem;
             padding: 1.15rem;
@@ -83,7 +83,7 @@
 
         .nav-card-icon {
             font-size: 1.6rem;
-            background: #111827;
+            background: #0f172a;
             padding: 0.5rem;
             border-radius: 0.6rem;
             border: 1px solid var(--border-color);
@@ -108,7 +108,7 @@
         }
 
         .back-btn {
-            background: #0b0f19;
+            background: #07090e;
             border: 1px solid var(--border-color);
             padding: 0.4rem 0.75rem;
             border-radius: 0.5rem;
@@ -118,7 +118,7 @@
         }
 
         .device-screen {
-            background: #0b0f19;
+            background: #07090e;
             border-radius: 1rem;
             padding: 1rem;
             border: 2px solid var(--border-color);
@@ -140,7 +140,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 0.3rem;
+            margin-bottom: 0.4rem;
         }
 
         .status-badge {
@@ -161,7 +161,7 @@
         }
 
         .display-output {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 600;
             text-align: right;
             min-height: 38px;
@@ -172,12 +172,41 @@
             justify-content: flex-end;
         }
 
+        .msg-input-field {
+            width: 100%;
+            background: #07090e;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 0.6rem;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            margin-bottom: 0.6rem;
+            outline: none;
+        }
+
+        .msg-input-field:focus { border-color: var(--primary-green); }
+
+        .msg-textarea {
+            width: 100%;
+            height: 75px;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 0.6rem;
+            font-size: 0.85rem;
+            background: #07090e;
+            color: var(--text-main);
+            resize: none;
+            outline: none;
+        }
+
+        .msg-textarea:focus { border-color: var(--primary-green); }
+
         .wave-box {
             display: none;
             justify-content: center;
             align-items: center;
             gap: 4px;
-            height: 22px;
+            height: 20px;
             margin-top: 0.4rem;
         }
 
@@ -195,7 +224,7 @@
 
         @keyframes bounce {
             0% { height: 6px; }
-            100% { height: 20px; }
+            100% { height: 18px; }
         }
 
         .keypad-grid {
@@ -206,7 +235,7 @@
         }
 
         .key-btn {
-            background: #0b0f19;
+            background: #07090e;
             border: 1px solid var(--border-color);
             border-radius: 0.65rem;
             padding: 0.7rem;
@@ -218,22 +247,8 @@
         }
 
         .key-btn:active {
-            background: #1f2937;
+            background: #1e293b;
             transform: scale(0.95);
-        }
-
-        .msg-input-area {
-            width: 100%;
-            height: 90px;
-            border: 1px solid var(--border-color);
-            border-radius: 0.65rem;
-            padding: 0.75rem;
-            font-size: 0.9rem;
-            background: #0b0f19;
-            color: var(--text-main);
-            resize: none;
-            outline: none;
-            margin-bottom: 1rem;
         }
 
         .action-row {
@@ -257,7 +272,9 @@
         }
 
         .btn-cancel { background: var(--accent-red); }
+        .btn-cancel:hover { opacity: 0.9; }
         .btn-execute { background: var(--primary-green); }
+        .btn-execute:hover { background: var(--primary-green-hover); }
 
         .stats-footer {
             display: grid;
@@ -272,7 +289,7 @@
         }
 
         .stats-footer div {
-            background: #0b0f19;
+            background: #07090e;
             padding: 0.3rem;
             border-radius: 0.4rem;
             border: 1px solid var(--border-color);
@@ -292,14 +309,14 @@
         <div id="viewHome" class="view-section active">
             <div class="home-header">
                 <div class="home-logo">NUMIX</div>
-                <div class="home-subtitle">Phone Number Validity & Verification API</div>
+                <div class="home-subtitle">Phone Number Validity & Messaging API</div>
             </div>
 
             <div class="nav-card" onclick="openModule('call')">
                 <div class="nav-card-icon">📞</div>
                 <div class="nav-card-info">
                     <h3>Voice Dialer Hub</h3>
-                    <p>Verify country codes, digit rules & live ring tunes.</p>
+                    <p>Verify country codes, 03/ +92 support & live ring tunes.</p>
                 </div>
             </div>
 
@@ -307,7 +324,7 @@
                 <div class="nav-card-icon">💬</div>
                 <div class="nav-card-info">
                     <h3>Message Desk</h3>
-                    <p>Validate text payloads & transmission statuses.</p>
+                    <p>Enter recipient number & text payload validation.</p>
                 </div>
             </div>
         </div>
@@ -352,19 +369,21 @@
             <div id="moduleMsgContent" style="display: none;">
                 <div id="msgScreenBox" class="device-screen">
                     <div class="screen-top">
-                        <span id="msgStatusLabel" class="status-badge">Compose Message Payload</span>
+                        <span id="msgStatusLabel" class="status-badge">Compose Message</span>
+                        <span id="msgCountryBadge" class="country-badge">Unknown</span>
                     </div>
-                    <textarea id="msgBodyInput" class="msg-input-area" placeholder="Type text payload here..."></textarea>
+                    <input type="text" id="msgNumberInput" class="msg-input-field" placeholder="Enter recipient number (e.g. 0322... or +92...)" oninput="evaluateMessageNumber()">
+                    <textarea id="msgBodyInput" class="msg-textarea" placeholder="Type text message payload..."></textarea>
                     <div id="msgWaveBox" class="wave-box">
                         <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Action Controls -->
+            <!-- Action Controls (Clean professional look without circles) -->
             <div class="action-row">
-                <button class="action-btn btn-cancel" onclick="cancelAction()">🔴 Cancel</button>
-                <button class="action-btn btn-execute" onclick="executeAction()"><span id="execIcon">🟢</span> <span id="execText">Call</span></button>
+                <button class="action-btn btn-cancel" onclick="cancelAction()">Cancel</button>
+                <button class="action-btn btn-execute" onclick="executeAction()"><span id="execText">Call</span></button>
             </div>
         </div>
 
@@ -426,9 +445,9 @@
             } catch(e) {}
         }
 
-        // Country Codes Database (with exact character length limits including country code)
+        // 20 Famous Country Codes Database with exact length requirements
         const countries = [
-            { code: '+92', name: 'Pakistan 🇵🇰', exactLen: 12 },  // e.g., +923224631874 (12 chars)
+            { code: '+92', name: 'Pakistan 🇵🇰', exactLen: 12 },  // e.g. +923224631874
             { code: '+91', name: 'India 🇮🇳', exactLen: 13 },
             { code: '+1', name: 'USA/Canada 🇺🇸', exactLen: 12 },
             { code: '+44', name: 'United Kingdom 🇬🇧', exactLen: 13 },
@@ -481,18 +500,21 @@
             document.getElementById('viewHome').classList.add('active');
         }
 
-        // Live validation and country detection as you type
+        // Helper to normalize local numbers starting with 0 (like 0322...) into +92 format for verification
+        function parseNumberInput(str) {
+            let cleaned = str.trim();
+            if (cleaned.startsWith('0')) {
+                cleaned = '+92' + cleaned.slice(1);
+            }
+            return cleaned;
+        }
+
         function evaluateNumber(str) {
             let badge = document.getElementById('countryBadge');
             let screen = document.getElementById('callScreenBox');
             let label = document.getElementById('callStatusLabel');
 
-            let processedStr = str;
-            // If it starts with '0', assume local Pakistani number format and map to +92 internally for check
-            if (str.startsWith('0')) {
-                processedStr = '+92' + str.slice(1);
-            }
-
+            let processedStr = parseNumberInput(str);
             let sorted = [...countries].sort((a,b) => b.code.length - a.code.length);
             let found = null;
             for (let c of sorted) {
@@ -506,7 +528,6 @@
                 badge.innerText = found.name;
                 badge.style.display = 'inline-block';
 
-                // Check if exact character length matches requirement
                 if (processedStr.length === found.exactLen) {
                     screen.className = "device-screen valid-green";
                     label.style.color = "var(--primary-green)";
@@ -521,7 +542,7 @@
                 if (str.length > 0) {
                     screen.className = "device-screen invalid-red";
                     label.style.color = "var(--accent-red)";
-                    label.innerText = "Unknown Prefix / Invalid Code";
+                    label.innerText = "Error: Invalid prefix or code";
                 } else {
                     screen.className = "device-screen";
                     label.style.color = "var(--text-muted)";
@@ -529,6 +550,25 @@
                 }
             }
             return { found, processedStr };
+        }
+
+        function evaluateMessageNumber() {
+            let numInput = document.getElementById('msgNumberInput').value;
+            let badge = document.getElementById('msgCountryBadge');
+            let processedStr = parseNumberInput(numInput);
+
+            let sorted = [...countries].sort((a,b) => b.code.length - a.code.length);
+            let found = null;
+            for (let c of sorted) {
+                if (processedStr.startsWith(c.code)) { found = c; break; }
+            }
+
+            if (found) {
+                badge.innerText = found.name;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
         }
 
         function pressKey(val) {
@@ -567,9 +607,11 @@
                 document.getElementById('countryBadge').style.display = "none";
                 document.getElementById('callWaveBox').style.display = "none";
             } else {
+                document.getElementById('msgNumberInput').value = "";
                 document.getElementById('msgBodyInput').value = "";
                 document.getElementById('msgScreenBox').className = "device-screen";
-                document.getElementById('msgStatusLabel').innerText = "Compose Message Payload";
+                document.getElementById('msgStatusLabel').innerText = "Compose Message";
+                document.getElementById('msgCountryBadge').style.display = "none";
                 document.getElementById('msgWaveBox').style.display = "none";
             }
         }
@@ -600,15 +642,9 @@
             clearAll();
             stats.total++;
 
-            let isValid = false;
-            let screen = currentId => document.getElementById(currentId);
-
             if (mode === 'call') {
                 let evalRes = evaluateNumber(numberVal);
-                if (evalRes.found && evalRes.processedStr.length === evalRes.found.exactLen) {
-                    isValid = true;
-                }
-
+                let isValid = (evalRes.found && evalRes.processedStr.length === evalRes.found.exactLen);
                 let box = document.getElementById('callScreenBox');
                 let label = document.getElementById('callStatusLabel');
                 let wave = document.getElementById('callWaveBox');
@@ -629,24 +665,34 @@
                     wave.style.display = "none";
                 }
             } else {
-                let content = document.getElementById('msgBodyInput').value.trim();
+                let numInput = document.getElementById('msgNumberInput').value.trim();
+                let bodyInput = document.getElementById('msgBodyInput').value.trim();
+                let processedStr = parseNumberInput(numInput);
+                
+                let sorted = [...countries].sort((a,b) => b.code.length - a.code.length);
+                let found = null;
+                for (let c of sorted) {
+                    if (processedStr.startsWith(c.code)) { found = c; break; }
+                }
+
+                let isValid = (found && processedStr.length === found.exactLen && bodyInput.length > 0);
                 let box = document.getElementById('msgScreenBox');
                 let label = document.getElementById('msgStatusLabel');
                 let wave = document.getElementById('msgWaveBox');
 
-                if (content.length > 0) {
+                if (isValid) {
                     stats.success++;
-                    isValid = true;
                     box.className = "device-screen valid-green";
                     label.style.color = "var(--primary-green)";
-                    label.innerText = "Message Dispatched Successfully";
+                    label.innerText = `Message Sent to ${found.name}!`;
+
                     let t = setTimeout(() => { startRingSequence(); }, 300);
                     timers.push(t);
                 } else {
                     stats.failed++;
                     box.className = "device-screen invalid-red";
                     label.style.color = "var(--accent-red)";
-                    label.innerText = "Error: Empty Payload";
+                    label.innerText = "Error: Invalid Number or Empty Message";
                     wave.style.display = "none";
                 }
             }
