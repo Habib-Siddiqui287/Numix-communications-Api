@@ -511,47 +511,56 @@
         }
 
         function evaluateNumber(str) {
-            let badge = document.getElementById('countryBadge');
-            let screen = document.getElementById('callScreenBox');
-            let label = document.getElementById('callStatusLabel');
+    let badge = document.getElementById('countryBadge');
+    let screen = document.getElementById('callScreenBox');
+    let label = document.getElementById('callStatusLabel');
 
-            let processedStr = parseNumberInput(str);
-            let sorted = [...countries].sort((a,b) => b.code.length - a.code.length);
-            let found = null;
-            for (let c of sorted) {
-                if (processedStr.startsWith(c.code)) { 
-                    found = c; 
-                    break; 
-                }
+    let cleaned = str.trim();
+    let found = null;
+    let requiredLen = 0;
+
+    if (cleaned.startsWith('03') || cleaned.startsWith('+92')) {
+        found = { code: '+92', name: 'Pakistan 🇵🇰' };
+        requiredLen = cleaned.startsWith('0') ? 11 : 12;
+    } else {
+        let sorted = [...countries].sort((a,b) => b.code.length - a.code.length);
+        for (let c of sorted) {
+            if (cleaned.startsWith(c.code)) { 
+                found = c; 
+                requiredLen = c.exactLen;
+                break; 
             }
-
-            if (found) {
-                badge.innerText = found.name;
-                badge.style.display = 'inline-block';
-
-                if (processedStr.length === found.exactLen) {
-                    screen.className = "device-screen valid-green";
-                    label.style.color = "var(--primary-green)";
-                    label.innerText = `Ready: ${found.name} (Valid)`;
-                } else {
-                    screen.className = "device-screen invalid-red";
-                    label.style.color = "var(--accent-red)";
-                    label.innerText = `Typing... (${processedStr.length}/${found.exactLen} digits)`;
-                }
-            } else {
-                badge.style.display = 'none';
-                if (str.length > 0) {
-                    screen.className = "device-screen invalid-red";
-                    label.style.color = "var(--accent-red)";
-                    label.innerText = "Error: Invalid prefix or code";
-                } else {
-                    screen.className = "device-screen";
-                    label.style.color = "var(--text-muted)";
-                    label.innerText = "Ready to Dial";
-                }
-            }
-            return { found, processedStr };
         }
+    }
+
+    if (found) {
+        badge.innerText = found.name;
+        badge.style.display = 'inline-block';
+
+        if (cleaned.length === requiredLen) {
+            screen.className = "device-screen valid-green";
+            label.style.color = "var(--primary-green)";
+            label.innerText = `Ready: ${found.name} (Valid)`;
+        } else {
+            screen.className = "device-screen invalid-red";
+            label.style.color = "var(--accent-red)";
+            label.innerText = `TYPING... (${cleaned.length}/${requiredLen} DIGITS)`;
+        }
+    } else {
+        badge.style.display = 'none';
+        if (str.length > 0) {
+            screen.className = "device-screen invalid-red";
+            label.style.color = "var(--accent-red)";
+            label.innerText = "ERROR: INVALID PREFIX OR DIGIT LENGTH";
+        } else {
+            screen.className = "device-screen";
+            label.style.color = "var(--text-muted)";
+            label.innerText = "Ready to Dial";
+        }
+    }
+    return { found, processedStr: cleaned, requiredLen };
+}
+
 
         function evaluateMessageNumber() {
             let numInput = document.getElementById('msgNumberInput').value;
@@ -643,13 +652,14 @@
             clearAll();
             stats.total++;
 
-            if (mode === 'call') {
+                    
+        if (mode === 'call') {
                 let evalRes = evaluateNumber(numberVal);
-                let isValid = (evalRes.found && evalRes.processedStr.length === evalRes.found.exactLen);
+                let isValid = (evalRes.found && numberVal.length === evalRes.requiredLen);
                 let box = document.getElementById('callScreenBox');
                 let label = document.getElementById('callStatusLabel');
                 let wave = document.getElementById('callWaveBox');
-
+                            
                 if (isValid) {
                     stats.success++;
                     box.className = "device-screen valid-green";
